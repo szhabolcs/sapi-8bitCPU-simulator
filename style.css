@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,500;0,600;0,700;1,500&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+:root{
+	--bg-color: #17181A;
+	--accent-color: #0AB377;
+	--text-color: #CDD1CC;
+	--gray-500: #202123;
+	--gray-400: #494A4C;
+
+	--heading-font: 'Space Mono', monospace;
+	--text-font: 'Roboto Mono', monospace;
+}
+
+body{
+	background: var(--bg-color);
+	color: var(--text-color);
+	font-family: var(--text-font);
+	font-size: 18px;
+	margin: 20px;
+}
+
+h1,h2,h3{
+	font-family: var(--heading-font);
+	margin-bottom: 10px;
+}
+
+#asm-compiled-input{
+	min-width: 560px;
+	min-height: 40px;
+	max-width: 560px;
+	max-height: 40px;
+	background: var(--gray-500);
+	padding: 10px;
+	color: var(--text-color);
+	font-size: 16px;
+	border: solid 1px var(--accent-color);
+}
+
+#registers{
+	display: flex;
+	gap: 5px;
+}
+#registers > div{
+	width: 100px;
+	border: solid 1px var(--accent-color);
+	padding: 20px;
+	padding-top: 15px;
+	padding-bottom: 22px;
+}
+#registers > div > h3{
+	color: var(--accent-color);
+	margin-bottom: 5px;
+	margin-top: 0px;
+}
+.reg-val{
+	margin-top: 0px;
+}
+.reg-val-hex{
+	background: var(--gray-400);
+	padding: 2px 7px 2px 7px;
+}
+.reg-val-dec{
+    margin-top: 5px;
+    display: inline-block;
+}
+
+#memory{
+	width: 541px;
+	border: solid 1px var(--accent-color);
+	padding: 20px;
+	margin-top: 5px;
+}
+#memory > h3{
+	color: var(--accent-color);
+	margin-bottom: 5px;
+	margin-top: 0px;
+}
+#memory > table{
+	width: 100%;
+}
+#memory > table, th, td{
+	text-align: center;
+  	border-collapse: collapse;
+}
+th{
+	padding-right: 15px;
+}
+tr:hover{
+	background: var(--gray-400);
+}
+.memory-val{
+	border: solid 1px transparent;
+	transition: background .1s ease-in-out, color .1s ease-in-out;
+}
+.memory-val:hover{
+	border: solid 1px var(--accent-color);
+}
+
+.btn{
+	margin-bottom: 15px;
+	background: var(--bg-color);
+	color: var(--text-color);
+	font-family: var(--text-font);
+	padding: 10px 15px 10px 15px;
+	border: solid 1px var(--accent-color);
+	font-size: 16px;
+
+	transition: background .1s ease-out;
+}
+
+.btn:hover{
+	background: var(--accent-color);
+	color: var(--bg-color);
+	cursor: pointer;
+}
+.active-btn{
+	background: var(--accent-color) !important;
+	color: var(--bg-color) !important;
+}
+
+.mem-loc-hl{
+	background: var(--accent-color);
+	color: var(--bg-color);
+}
