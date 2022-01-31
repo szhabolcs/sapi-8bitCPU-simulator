@@ -92,8 +92,10 @@ function clearDOMRegisters() {
 	let DOMRegisterDECValues = document.querySelectorAll(".reg-val-dec");
 	let DOMRegisterHEXValues = document.querySelectorAll(".reg-val-hex");
 
-	for (register of DOMRegisterDECValues)
-		register.innerText = "0";
+	for (register of DOMRegisterDECValues){
+		register.value = "0";
+		register.dispatchEvent(new Event("input"));
+	}
 
 	for (register of DOMRegisterHEXValues)
 		register.innerText = "0x00";
@@ -105,8 +107,13 @@ function clearDOMRegisters() {
  * @param {Number} value [HEX] New value
  */
 function updateDOMRegister(id, value) {
-	document.querySelector(`#reg-${id}-div .reg-val-dec`).innerText = int(value);
+	if (isNaN(id))
+		document.querySelector(`#reg-inp-div .reg-val-hex`).innerText = "0x" + value;
+
+	document.querySelector(`#reg-${id}-div .reg-val-dec`).value = int(value);
 	document.querySelector(`#reg-${id}-div .reg-val-hex`).innerText = "0x" + value;
+
+	resizeInput(document.querySelector(`#reg-${id}-div .reg-val-dec`));
 }
 
 /**
@@ -175,6 +182,30 @@ function hex(value, pad = "start") {
 	return pad === "start" ? value.toString(16).padStart(2, '0') : value.toString(16).padEnd(2, '0');
 }
 
+function handleDOMContentEdit(e) {
+	let registerId = parseInt(e.target.attributes["data-regid"].value);
+	let registerValue = parseInt(e.target.value);
+
+	if (isNaN(registerValue)){
+		
+		return;		// TODO: make an invalid input error
+	}
+	
+	if (isNaN(registerId))
+		INP = hex(registerValue);
+	else
+		R[registerId] = hex(registerValue);
+
+	updateDOMRegister(registerId, hex(registerValue));
+}
+
+function resizeInput(e) {
+	if (e.target)
+		e.target.style.width = e.target.value.length + "ch";
+	else
+		e.style.width = e.value.length + "ch";
+}
+
 /**
  * Converts HEX to DEC.
  * 
@@ -189,11 +220,25 @@ function int(value, radix = 16) {
 // Init function calls
 
 initDOMMemory();
+document.querySelectorAll(".editable").forEach(item => {
+	resizeInput(item); // immediately call the function
+});
 
 // Event handling
 
 DOMRunBtn.onclick = toggelSimulation;
 DOMResetBtn.onclick = resetSimulation;
+document.querySelectorAll(".editable").forEach(item => {
+	item.addEventListener("input", e => handleDOMContentEdit(e));
+	item.addEventListener("input", e => resizeInput(e)); // bind the "resizeInput" callback on "input" event
+
+	// Prevents anything other than numebers, backspace and arrows
+	item.addEventListener("keydown", e => {
+		if (!(/Digit|Backspace|Arrow|Home|End/.test(e.code))){
+			e.preventDefault();
+		}
+	});
+});
 
 /**
  * Simulation
@@ -231,10 +276,10 @@ async function simulation() {
 	let RbValue;
 
 	/** [DEC] Register index in R array */
-	let Ra;
+	let a;
 
 	/** [DEC] Register index in R array */
-	let Rb;
+	let b;
 
 	while (simulationState === SIM_RUNNING) {
 		await delay(tick * 1000);
@@ -244,139 +289,139 @@ async function simulation() {
 
 		switch (memory[PC][0]) {
 			case '0':	// AND Ra, Rb	|	Ra &= Rb
-				Ra = Math.floor(operand / 4);
-				Rb = operand % 4;
-				RaValue = int(R[Ra]);
-				RbValue = int(R[Rb]);
+				a = Math.floor(operand / 4);
+				b = operand % 4;
+				RaValue = int(R[a]);
+				RbValue = int(R[b]);
 				RaValue &= RbValue;
 
-				R[Ra] = hex(RaValue);
-				updateDOMRegister(Ra, R[Ra]);
+				R[a] = hex(RaValue);
+				updateDOMRegister(a, R[a]);
 				PC++;
 
 				break;
 			case '1':	// OR Ra, Rb	|	Ra |= Rb
-				Ra = Math.floor(operand / 4);
-				Rb = operand % 4;
-				RaValue = int(R[Ra]);
-				RbValue = int(R[Rb]);
+				a = Math.floor(operand / 4);
+				b = operand % 4;
+				RaValue = int(R[a]);
+				RbValue = int(R[b]);
 				RaValue |= RbValue;
 
-				R[Ra] = hex(RaValue);
-				updateDOMRegister(Ra, R[Ra]);
+				R[a] = hex(RaValue);
+				updateDOMRegister(a, R[a]);
 				PC++;
 
 				break;
 			case '2':	// ADD Ra, Rb	|	Ra += Rb
-				Ra = Math.floor(operand / 4);
-				Rb = operand % 4;
-				RaValue = int(R[Ra]);
-				RbValue = int(R[Rb]);
+				a = Math.floor(operand / 4);
+				b = operand % 4;
+				RaValue = int(R[a]);
+				RbValue = int(R[b]);
 				RaValue += RbValue;
 
-				R[Ra] = hex(RaValue);
-				updateDOMRegister(Ra, R[Ra]);
+				R[a] = hex(RaValue);
+				updateDOMRegister(a, R[a]);
 				PC++;
 
 				break;
 			case '3':	// SUB Ra, Rb	|	Ra -= Rb
-				Ra = Math.floor(operand / 4);
-				Rb = operand % 4;
-				RaValue = int(R[Ra]);
-				RbValue = int(R[Rb]);
+				a = Math.floor(operand / 4);
+				b = operand % 4;
+				RaValue = int(R[a]);
+				RbValue = int(R[b]);
 				RaValue -= RbValue;
 
-				R[Ra] = hex(RaValue);
-				updateDOMRegister(Ra, R[Ra]);
+				R[a] = hex(RaValue);
+				updateDOMRegister(a, R[a]);
 				PC++;
 
 				break;
 			case '4':	// LW Ra, (Rb)	|	Ra = Mem[Rb]
-				Ra = Math.floor(operand / 4);
-				Rb = operand % 4;
-				RbValue = int(R[Rb]);
+				a = Math.floor(operand / 4);
+				b = operand % 4;
+				RbValue = int(R[b]);
 
-				R[Ra] = memory[RbValue];
-				updateDOMRegister(Ra, R[Ra]);
+				R[a] = memory[RbValue];
+				updateDOMRegister(a, R[a]);
 				PC++;
 
 				break;
 			case '5':	// SW Ra, (Rb)	|	Mem[Rb] = Ra
-				Ra = Math.floor(operand / 4);
-				Rb = operand % 4;
-				RbValue = int(R[Rb]);
+				a = Math.floor(operand / 4);
+				b = operand % 4;
+				RbValue = int(R[b]);
 
-				memory[RbValue] = R[Ra];
-				updateDOMMemory(RbValue, R[Ra]);
+				memory[RbValue] = R[a];
+				updateDOMMemory(RbValue, R[a]);
 				PC++;
 
 				break;
 			case '6':	// MOV Ra, Rb	|	Ra = Rb
-				Ra = Math.floor(operand / 4);
-				Rb = operand % 4;
+				a = Math.floor(operand / 4);
+				b = operand % 4;
 
-				R[Ra] = R[Rb];
-				updateDOMRegister(Ra, R[Rb]);
+				R[a] = R[b];
+				updateDOMRegister(a, R[b]);
 				PC++;
 
 				break;
 			case '7':	// INP Ra	|	Ra = Inp
-				Ra = operand / 4;
+				a = operand / 4;
 
-				R[Ra] = INP;
+				R[a] = INP;
 
 				break;
 			case '8':	// 8 | JEQ Ra, value|label	|	PC = value|label, Ra == 0
-				Ra = operand / 4;
+				a = operand / 4;
 
-				if (R[Ra] == 0)
+				if (R[a] == 0)
 					PC = int(memory[PC + 1]);
 
 				break;
 			case '9':	// JNE Ra, value|label	|	PC = value|label, Ra != 0
-				Ra = operand / 4;
+				a = operand / 4;
 
-				if (R[Ra] != 0)
+				if (R[a] != 0)
 					PC = int(memory[PC + 1]);
 
 				break;
 			case 'a':	// JGT Ra, value|label	|	PC = value|label, Ra > 0
-				Ra = operand / 4;
+				a = operand / 4;
 
-				if (R[Ra] > 0)
+				if (R[a] > 0)
 					PC = int(memory[PC + 1]);
 
 				break;
 			case 'b':	// JLT Ra, value|label	|	PC = value|label, Ra < 0
-				Ra = operand / 4;
+				a = operand / 4;
 
-				if (R[Ra] < 0)
+				if (R[a] < 0)
 					PC = int(memory[PC + 1]);
 
 				break;
 
 			case 'c':	// LW Ra, value|label	|	Ra = Mem[value|label]
-				Ra = operand / 4;
+				a = operand / 4;
 
-				R[Ra] = memory[memory[PC + 1]];
-				updateDOMRegister(Ra, R[Ra]);
+				R[a] = memory[memory[PC + 1]];
+				updateDOMRegister(a, R[a]);
 				PC+=2;
 
 				break;
 
 			case 'd':	// SW Ra, value|label	|	Mem[value|label] = Ra
-				Ra = operand / 4;
+				a = operand / 4;
 
-				memory[memory[PC + 1]] = R[Ra];
-				updateDOMMemory(Ra,R[Ra]);
+				memory[memory[PC + 1]] = R[a];
+				updateDOMMemory(a,R[a]);
 				PC+=2;
 
 				break;
 			case 'e':	// LI Ra, value|label	|	Ra = value|label
-				Ra = operand / 4;
+				a = operand / 4;
 
-				R[Ra] = memory[PC + 1];
-				updateDOMRegister(Ra, R[Ra]);
+				R[a] = memory[PC + 1];
+				updateDOMRegister(a, R[a]);
 				PC+=2;
 
 				break;
