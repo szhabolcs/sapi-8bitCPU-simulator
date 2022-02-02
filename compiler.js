@@ -1,8 +1,10 @@
 class Assembler {
     static assemble(code){
       let labels = [];
-      let memoryOps = [];
-      let memoryData = [];
+    //   let memoryOps = [];
+    //   let memoryData = [];
+    let asm = [];
+    let asmIndex = 0;
   
       let lines = code.split('\n').filter(line => line.trim()); //filter out empty lines
       
@@ -11,6 +13,28 @@ class Assembler {
       }*/
   
       //find labels
+      lines.forEach((line, index) => {
+        let [opCode, operand, data] = line.split(/, |,| |:/).map(line => {
+            line.replace("(","");
+            line.replace(")","");
+            return line;
+        });
+
+        // LI R2, 0x09  egyszeru, 2*4 az operand
+        // MOV R1, R2   == 66 ,mert 6/4 = 1  es 6 % 4 = 2 
+        // op = LI
+        // operand = R2
+        // data = 0x09
+
+        console.log(Assembler.hex(InstructionMap[opCode], "end"), operand, data);
+        let temp = Assembler.hex(InstructionMap[opCode], "end");
+        let temp1 = Assembler.makeOperand(opCode, operand, data);
+        temp[1] = temp1;
+
+      });
+
+      return;
+
       lines.forEach((line, lineNumber) => {
         const regex = /^([.A-Za-z0-9]*:)?\s*([A-Za-z]*)?\s*([.A-Za-z0-9]*)?\s?$/g;
         
@@ -79,6 +103,15 @@ class Assembler {
   
       return memory;
     }
+
+    /**
+     * Converts DEC to HEX
+     * @param {Number} value Value to convert
+     * @param {String} pad Text padding. Default "start"
+     */
+    static hex(value, pad = "start") {
+        return pad === "start" ? value.toString(16).padStart(2, '0') : value.toString(16).padEnd(2, '0');
+    }
   }
   
   const InstructionMap = {
@@ -109,6 +142,5 @@ function compile(testCode) {
 
 
 let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\nend:JMP end';
-
 //e8 09 ec 07 2e f0 05
 console.log(compile(testCode));
