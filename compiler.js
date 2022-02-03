@@ -13,6 +13,8 @@ class Assembler {
       }*/
   
       //find labels
+      let finalCode=""
+
       lines.forEach((line, index) => {
         let [opCode, operand, data] = line.split(/, |,| |:/).map(line => {
             line.replace("(","");
@@ -26,83 +28,101 @@ class Assembler {
         // operand = R2
         // data = 0x09
 
-        console.log(Assembler.hex(InstructionMap[opCode], "end"), operand, data);
-        let temp = Assembler.hex(InstructionMap[opCode], "end");
-        let temp1 = Assembler.makeOperand(opCode, operand, data);
-        temp[1] = temp1;
-
-      });
-
-      return;
-
-      lines.forEach((line, lineNumber) => {
-        const regex = /^([.A-Za-z0-9]*:)?\s*([A-Za-z]*)?\s*([.A-Za-z0-9]*)?\s?$/g;
+        //console.log(Assembler.hex(InstructionMap[opCode], "end"), operand, data);
+        //console.log(InstructionMap[opCode], operand, data);
         
+        
+        let firstChar = Assembler.hex(InstructionMap[opCode], "end");
+        let restOfString = Assembler.makeOperand(opCode, operand, data);
+        //console.log(restOfString,"\n");
+       if(restOfString.length===1){
+        finalCode =finalCode+" "+firstChar[0]+restOfString;
+       }
+       else{
+        finalCode =finalCode+" "+firstChar[0]+restOfString[0]+restOfString.substring(restOfString.indexOf(" "));
+       } 
+        //console.log(restOfString," ",restOfString.substring(restOfString.indexOf(" ")));
+
+      });
     
-        //sum errors idk how to fix bc js
-
-        const [fullMatch, label, op, operand] = regex.exec(line);
-  
-
-        if(label) {
-          const strippedLabel = label.toLowerCase().replace(':', '');
-          labels.push({name: strippedLabel, lineNumber: lineNumber});
-        }
-      });
-  
-      //create opcodes
-      lines.forEach((line, lineNumber) => {
-        const regex = /^([.A-Za-z0-9]*:)?\s*([A-Za-z]*)?\s*([.A-Za-z0-9]*)?\s?$/g;
-        const [fullMatch, label, op, operand] = regex.exec(line);
-  
-        if(op) {
-          if(InstructionMap[op] || InstructionMap[op] === 0 || op.toLowerCase() === 'db') {
-            memoryOps[lineNumber] = InstructionMap[op];
-          } else {
-            throw `Error: Unknown opcode: ${op} (line ${lineNumber + 1})`;
-          }
-        } else {
-          throw `Error: No opcode (line ${lineNumber + 1})`;
-        }
-      });
-  
-      //create data and replace labels
-      lines.forEach((line, lineNumber) => {
-        const regex = /^([.A-Za-z0-9]*:)?\s*([A-Za-z]*)?\s*([.A-Za-z0-9]*)?\s?$/g;
-        const [fullMatch, label, op, operand] = regex.exec(line);
-  
-        if(operand) {
-          if(parseInt(operand) >= 0) {
-            memoryData[lineNumber] = parseInt(operand);
-          } else {
-            const addressFromLabel = labels.filter(label => {
-              return label.name === operand.toLowerCase();
-            })[0];
-  
-            if(addressFromLabel) {
-              memoryData[lineNumber] = addressFromLabel.lineNumber;
-            } else {
-              throw `Error: Unknown label: ${operand} (line ${lineNumber + 1})`
-            }
-          }
-        }
-      });
-  
-      let memory = [];
-      //combine memory and data operands
-      for(let i = 0; i < 16; i++) {
-        if(memoryOps[i]) {
-          memory[i] = memoryOps[i] << 4;
-        } else {
-          memory[i] = 0;
-        }
-        if(memoryData[i]) {
-          memory[i] |= memoryData[i];
-        }
-      }
-  
-      return memory;
+      return finalCode;
+     
     }
+
+    static makeOperand(opCode, operand, data){
+        if(operand=='R0' && data=='R0'){
+          return '0';
+        }
+        else if(operand=='R0' && data=='R1'){
+          return '1';
+        }
+        else if(operand=='R0' && data=='R2'){
+          return '2';
+        }
+        else if(operand=='R0' && data=='R3'){
+          return '3';
+        }
+        else if(operand=='R1' && data=='R0'){
+          return '4';
+        }
+        else if(operand=='R1' && data=='R1'){
+          return '5';
+        }
+        else if(operand=='R1' && data=='R2'){
+          return '6';
+        }
+        else if(operand=='R1' && data=='R3'){
+          return '7';
+        }
+        else if(operand=='R2' && data=='R0'){
+          return '8';
+        }
+        else if(operand=='R2' && data=='R1'){
+          return '9';
+        }
+        else if(operand=='R2' && data=='R2'){
+          return 'a';
+        }
+        else if(operand=='R2' && data=='R3'){
+          return 'b';
+        }
+        else if(operand=='R3' && data=='R0'){
+          return 'c';
+        }
+        else if(operand=='R3' && data=='R1'){
+          return 'd';
+        }
+        else if(operand=='R3' && data=='R2'){
+          return 'e';
+        }
+        else if(operand=='R3' && data=='R3'){
+          return 'f';
+        }
+        else{
+          if(operand=='R0'){
+            return '0 '+data.slice(-2);
+          }
+          else if(operand == 'R1'){
+            return'4 '+data.slice(-2);
+          }
+          else if(operand == 'R2'){
+            return'8 '+data.slice(-2);
+          }
+          else if(operand == 'R3'){
+            return'c '+data.slice(-2);
+          }
+          else{
+            console.log(opCode,"\n",operand,"\n",data,"\n");
+            return Assembler.hex(InstructionMap[operand], "start")+" "+Assembler.hex(Assembler.asmIndex, "start"); 
+          }
+        }
+        asmIndex+=1;
+    }
+
+
+
+
+
 
     /**
      * Converts DEC to HEX
@@ -110,7 +130,7 @@ class Assembler {
      * @param {String} pad Text padding. Default "start"
      */
     static hex(value, pad = "start") {
-        return pad === "start" ? value.toString(16).padStart(2, '0') : value.toString(16).padEnd(2, '0');
+        if(value!==undefined)return pad === "start" ? value.toString(16).padStart(2, '0') : value.toString(16).padEnd(2, '0');
     }
   }
   
@@ -141,6 +161,7 @@ function compile(testCode) {
 }
 
 
-let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\nend:JMP end';
+let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\n';
+//let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\nend:JMP end';
 //e8 09 ec 07 2e f0 05
 console.log(compile(testCode));
