@@ -1,199 +1,259 @@
 class Assembler {
-    static assemble(code){
-      let labels = [];
-    //   let memoryOps = [];
-    //   let memoryData = [];
-    let asm = [];
-    let asmIndex = 0;
-  
-      let lines = code.split('\n').filter(line => line.trim()); //filter out empty lines
-      
-      /*if(lines.length > 16) {
-        throw `Error: Not enough memory for this code! (${lines.length} lines)`;
-      }*/
-  
-      //find labels
-      let finalCode=""
-      let index1=0;
-
-      lines.forEach((line, index) => {
-        let [opCode, operand, data] = line.split(/, |,| |:/).map(line => {
-            line.replace("(","");
-            line.replace(")","");
-            return line;
-        });
-
-        // LI R2, 0x09  egyszeru, 2*4 az operand
-        // MOV R1, R2   == 66 ,mert 6/4 = 1  es 6 % 4 = 2 
-        // op = LI
-        // operand = R2
-        // data = 0x09
-
-        //console.log(Assembler.hex(InstructionMap[opCode], "end"), operand, data);
-        //console.log(InstructionMap[opCode], operand, data);
-        
-        
-        let firstChar = Assembler.hex(InstructionMap[opCode], "end");
-        asmIndex+=1;
-        let restOfString = Assembler.makeOperand(opCode, operand, data, asmIndex);
-        //console.log(restOfString,"\n");
-       if(restOfString.length===1){
-        finalCode =finalCode+" "+firstChar[0]+restOfString;
-        
-       }
-       else{
-        if(firstChar!==undefined){
-          finalCode = finalCode+" "+firstChar[0]+restOfString[0]+restOfString.substring(restOfString.indexOf(" "));
-        }
-        else{
-          finalCode = finalCode+" "+restOfString;
-        }
-        
-      } 
-        //console.log(restOfString," ",restOfString.substring(restOfString.indexOf(" ")));
-
-      });
-      
-      return finalCode;
-     
-    }
-
-    static makeOperand(opCode, operand, data, asmIndex){
-      //asmIndex++;
-        if(operand=='R0' && data=='R0'){
-          Assembler.asmIndex++;
-          return '0';
-        }
-        else if(operand=='R0' && data=='R1'){
-          Assembler.asmIndex++;
-          return '1';
-        }
-        else if(operand=='R0' && data=='R2'){
-          Assembler.asmIndex++;
-          return '2';
-        }
-        else if(operand=='R0' && data=='R3'){
-          Assembler.asmIndex++;
-          return '3';
-        }
-        else if(operand=='R1' && data=='R0'){
-          Assembler.asmIndex++;
-          return '4';
-        }
-        else if(operand=='R1' && data=='R1'){
-          Assembler.asmIndex++;
-          return '5';
-        }
-        else if(operand=='R1' && data=='R2'){
-          Assembler.asmIndex++;
-          return '6';
-        }
-        else if(operand=='R1' && data=='R3'){
-          Assembler.asmIndex++;
-          return '7';
-        }
-        else if(operand=='R2' && data=='R0'){
-          Assembler.asmIndex++;
-          return '8';
-        }
-        else if(operand=='R2' && data=='R1'){
-          Assembler.asmIndex++;
-          return '9';
-        }
-        else if(operand=='R2' && data=='R2'){
-          Assembler.asmIndex++;
-          return 'a';
-        }
-        else if(operand=='R2' && data=='R3'){
-          Assembler.asmIndex++;
-          return 'b';
-        }
-        else if(operand=='R3' && data=='R0'){
-          Assembler.asmIndex++;
-          return 'c';
-        }
-        else if(operand=='R3' && data=='R1'){
-          Assembler.asmIndex++;
-          return 'd';
-        }
-        else if(operand=='R3' && data=='R2'){
-          Assembler.asmIndex++;
-          return 'e';
-        }
-        else if(operand=='R3' && data=='R3'){
-          Assembler.asmIndex++;
-          return 'f';
-        }
-        else{
-          if(operand=='R0'){
-            Assembler.asmIndex+=2;
-            return '0 '+data.slice(-2);
-          }
-          else if(operand == 'R1'){
-            Assembler.asmIndex+=2;
-            return'4 '+data.slice(-2);
-          }
-          else if(operand == 'R2'){
-            Assembler.asmIndex+=2;
-            return'8 '+data.slice(-2);
-          }
-          else if(operand == 'R3'){
-            Assembler.asmIndex+=2;
-            return'c '+data.slice(-2);
-          }
-          else{
-            Assembler.asmIndex+=2;
-            //console.log(opCode,"\n",operand,"\n",data,"\n");
-            return Assembler.hex(InstructionMap[operand], "start")+" "+Assembler.hex(Assembler.asmIndex+1, "start"); 
-          }
-          
-        }
-        
-    }
-    
-
-
-
-
-
-    /**
-     * Converts DEC to HEX
-     * @param {Number} value Value to convert
-     * @param {String} pad Text padding. Default "start"
-     */
-    static hex(value, pad = "start") {
-        if(value!==undefined)return pad === "start" ? value.toString(16).padStart(2, '0') : value.toString(16).padEnd(2, '0');
-    }
+  constructor(){
+    this.memAddress = 0;
+    this.labels = {};
   }
-  
-  const InstructionMap = {
-    "AND": 0x00,
-    "OR": 0x01,
-    "ADD": 0x02,
-    "SUB": 0x03,
-    "LW": 0x04,
-    "SW": 0x05,
-    "MOV": 0x06,
-    "INP": 0x07,
-    "JEQ": 0x08,
-    "JNE": 0x09,
-    "JGT": 0xa,
-    "JLT": 0xb,
-    "LW": 0xc,
-    "SW": 0xd,
-    "LI": 0xe,
-    "JMP": 0xf,
+
+  getMemAddress(){
+    return this.memAddress;
+  }
+  setMemAddress(value){
+    this.memAddress = value;
+  }
+  incrementMemAddress(byValue = 1){
+    this.memAddress += byValue;
+  }
+
+  getLabel(key){
+    return this.labels[key];
+  }
+
+  setLabel(key, value){
+    this.labels[key] = value;
+  }
+
+  assemble(code) {
+    this.setMemAddress(0);
+    code = code.replace(":", "\n");
+    let lines = code.split('\n').filter(line => line.trim()); //filter out empty lines
+    let finalCode = ""
+
+    lines.forEach(line => {
+      line = line.split(/;|#/)[0];
+      line = line.trim();
+      if (line.length === 0) return;  // skip lines with only comments
+
+      let [opCode, operand, data] = line.split(/, |,| |:/).map(line => {
+        line = line.replace("(", "");
+        line = line.replace(")", "");
+        return line;
+      });
+
+      // LI R2, 0x09  egyszeru, 2*4 az operand
+      // MOV R1, R2   == 66 ,mert 6/4 = 1  es 6 % 4 = 2 
+      // op = LI
+      // operand = R2
+      // data = 0x09
+
+      //console.log(Assembler.hex(InstructionMap[opCode], "end"), operand, data);
+      //console.log(InstructionMap[opCode], operand, data);
+
+
+      let firstChar = Assembler.hex(InstructionMap[opCode], "end");
+      // this.incrementMemAddress();
+      let restOfString = this.makeOperand(opCode, operand, data);
+      //console.log(restOfString,"\n");
+
+      if(operand === undefined && data === undefined) return;
+
+      if (restOfString !== undefined && restOfString.length === 1) {  // one byte
+        finalCode += firstChar[0] + restOfString + " ";
+        this.incrementMemAddress();
+      }
+      else {
+        if (restOfString !== undefined && firstChar !== undefined) {  // two bytes
+          finalCode += firstChar[0] + restOfString[0] + restOfString.substring(restOfString.indexOf(" ")) + " ";
+          this.incrementMemAddress(2);
+        }
+        else if (opCode === "JMP"){ // two bytes, JMP
+            finalCode += firstChar[0] + "0 " + Assembler.hex(this.getLabel(operand)) + " ";
+            this.incrementMemAddress(2);
+        }
+        else {  // two bytes, JNE, JEQ...
+          finalCode += firstChar[0] + "0 " + Assembler.hex(this.getLabel(data)) + " ";
+          this.incrementMemAddress(2);
+        }
+      }
+      //console.log(restOfString," ",restOfString.substring(restOfString.indexOf(" ")));
+
+    });
+
+    return finalCode;
+
+  }
+
+  makeOperand(opCode, operand, data) {
+    // this.incrementMemAddress();
+
+    if (operand == 'R0' && data == 'R0') {
+      return '0';
+    }
+    else if (operand == 'R0' && data == 'R1') {
+      return '1';
+    }
+    else if (operand == 'R0' && data == 'R2') {
+      return '2';
+    }
+    else if (operand == 'R0' && data == 'R3') {
+      return '3';
+    }
+    else if (operand == 'R1' && data == 'R0') {
+      return '4';
+    }
+    else if (operand == 'R1' && data == 'R1') {
+      return '5';
+    }
+    else if (operand == 'R1' && data == 'R2') {
+      return '6';
+    }
+    else if (operand == 'R1' && data == 'R3') {
+      return '7';
+    }
+    else if (operand == 'R2' && data == 'R0') {
+      return '8';
+    }
+    else if (operand == 'R2' && data == 'R1') {
+      return '9';
+    }
+    else if (operand == 'R2' && data == 'R2') {
+      return 'a';
+    }
+    else if (operand == 'R2' && data == 'R3') {
+      return 'b';
+    }
+    else if (operand == 'R3' && data == 'R0') {
+      return 'c';
+    }
+    else if (operand == 'R3' && data == 'R1') {
+      return 'd';
+    }
+    else if (operand == 'R3' && data == 'R2') {
+      return 'e';
+    }
+    else if (operand == 'R3' && data == 'R3') {
+      return 'f';
+    }
+    else{
+      if (!isNaN(parseInt(data)) && operand == 'R0') {
+        // this.incrementMemAddress();
+        return '0 ' + data.slice(-2);
+      }
+      else if (!isNaN(parseInt(data)) && operand == 'R1') {
+        // this.incrementMemAddress();
+        return '4 ' + data.slice(-2);
+      }
+      else if (!isNaN(parseInt(data)) && operand == 'R2') {
+        // this.incrementMemAddress();
+        return '8 ' + data.slice(-2);
+      }
+      else if (!isNaN(parseInt(data)) && operand == 'R3') {
+        // this.incrementMemAddress();
+        return 'c ' + data.slice(-2);
+      }
+      else {
+        // this.incrementMemAddress(-1);
+        if (data === undefined )
+          this.setLabel(opCode, this.getMemAddress());
+        else
+          this.setLabel(data, this.getMemAddress());
+      }
+
+    }
+
+  }
+
+  /**
+   * Converts DEC to HEX
+   * @param {Number} value Value to convert
+   * @param {String} pad Text padding. Default "start"
+   */
+  static hex(value, pad = "start") {
+    if (value !== undefined) return pad === "start" ? value.toString(16).padStart(2, '0') : value.toString(16).padEnd(2, '0');
+  }
 }
-  
+
+const InstructionMap = {
+  "AND": 0x00,
+  "OR": 0x01,
+  "ADD": 0x02,
+  "SUB": 0x03,
+  "LW": 0x04,
+  "SW": 0x05,
+  "MOV": 0x06,
+  "INP": 0x07,
+  "JEQ": 0x08,
+  "JNE": 0x09,
+  "JGT": 0xa,
+  "JLT": 0xb,
+  "LW": 0xc,
+  "SW": 0xd,
+  "LI": 0xe,
+  "JMP": 0xf,
+}
+
 //export { Assembler };
 
 
-function compile(testCode) {
-    return "Compiled: " + Assembler.assemble(testCode) ;
-}
+// function compile(testCode) {
+//   return "Compiled: " + Assembler.assemble(testCode);
+// }
 
 
 //let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\n';
-let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\nend:JMP end';
+// let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\nend:JMP end';
+
+const assembler = new Assembler();
+
+// console.log(assembler.assemble(`JEQ R1, 0x69`));
+
+//e0 01 e4 01 6d 68 29 61 66 6e f0 05 f0 0c
+// console.log(assembler.assemble(`
+// # Fib code
+// LI R0, 0x01   ; R0 = 1
+// LI R1, 0x01
+
+// MOV R3, R1
+
+// loop:
+// MOV R2, R0
+// ADD R2, R1
+
+// MOV R0, R1
+// MOV R1, R2
+
+// MOV R3, R2
+
+// JMP loop
+
+// end:
+// JMP end
+// `));
+
 //e8 09 ec 07 2e f0 05
-console.log(compile(testCode));
+// console.log(assembler.assemble(`
+// LI R2, 0x09
+// LI R3, 0x07
+// ADD R3, R2
+// end:JMP end
+// `));
+
+console.log(assembler.assemble(`
+;   Loads 1...n in mem[0x20]...mem[0x2+n]
+
+    LI R0, 0x08     ; n = 8
+    LI R1, 0x01     ; tmp = 1
+    LI R2, 0x20     ; mem_i
+    LI R3, 0x01     ; i
+
+main:
+    
+    SW R3, (R2)     ; mem[mem_i] = i
+    ADD R2, R1      ; mem_i++
+    ADD R3, R1      ; i++
+
+    SUB R0, R1      ; n -= tmp
+    JNE R0, main    ; if (n) main
+
+end:
+    JMP end
+`));
