@@ -71,11 +71,21 @@ e0 01 e4 01 ec 01 68 29 61 66 6e f0 06 f0 0d</textarea>
 		
 			<div class="column" >
 			<h3>Enter your assembly code here:</h3>
-			<textarea id="asm-input">LI R2, 0x01
-LI R3, 0x02
-ADD R3,R2
-end:
-	JMP end	</textarea>
+			<textarea id="asm-input">#Fib code
+LI R0, 0x01 ; R0 = 1
+LI R1, 0x01
+MOV R3, R1
+loop:
+    MOV R2, R0
+	ADD R2, R1
+	MOV R0, R1
+	MOV R1, R2
+	MOV R3, R2
+	JMP loop
+#end: 
+#	JMP end 
+#still working on multiple labels and conditional jumps
+</textarea>
 				<br>
 				<div>
 					<!--<input type="button" value="Compile" id="compile-btn" class="btn">
@@ -83,8 +93,8 @@ end:
 					<button id="compile-btn" class="btn" onclick="assembleCode()">Compile</button>
 					</div>
 				<h3>Copy your compiled code from here:</h3>
-				<textarea id="asm-output">
-
+				<textarea id="asm-output" >v2.0 raw
+e0 01 e4 01 6d 68 29 61 66 6e f0 05 
 				</textarea>
 				<script src="assembler.js"></script>
 			</div>

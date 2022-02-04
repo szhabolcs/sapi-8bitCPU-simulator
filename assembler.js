@@ -207,28 +207,24 @@ const assembler = new Assembler();
 // console.log(assembler.assemble(`JEQ R1, 0x69`));
 
 //e0 01 e4 01 6d 68 29 61 66 6e f0 05 f0 0c
-// console.log(assembler.assemble(`
-// # Fib code
-// LI R0, 0x01   ; R0 = 1
-// LI R1, 0x01
+/*
+console.log(assembler.assemble(`
+# Fib code
+LI R0, 0x01   ; R0 = 1
+LI R1, 0x01
+MOV R3, R1
 
-// MOV R3, R1
-
-// loop:
-// MOV R2, R0
-// ADD R2, R1
-
-// MOV R0, R1
-// MOV R1, R2
-
-// MOV R3, R2
-
-// JMP loop
-
-// end:
-// JMP end
-// `));
-
+loop:
+   MOV R2, R0
+   ADD R2, R1
+   MOV R0, R1
+   MOV R1, R2
+   MOV R3, R2
+   JMP loop
+end:
+   JMP end
+`));
+*/
 //e8 09 ec 07 2e f0 05
 // console.log(assembler.assemble(`
 // LI R2, 0x09
@@ -237,6 +233,7 @@ const assembler = new Assembler();
 // end:JMP end
 // `));
 
+/*
 console.log(assembler.assemble(`
 ;   Loads 1...n in mem[0x20]...mem[0x2+n]
 
@@ -256,9 +253,9 @@ main:
 
 end:
     JMP end
-`));
+`));*/
 
 function assembleCode(){
-  let input = document.getElementById("asm-input").value;
-  document.getElementById('asm-output').innerHTML = assembler.assemble(input);
+  let input =document.getElementById("asm-input").value;
+  document.getElementById('asm-output').innerHTML = "v2.0 raw\n"+assembler.assemble(input);
 }

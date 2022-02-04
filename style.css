@@ -57,7 +57,7 @@ h1,h2,h3{
 
 #asm-input{
 	min-width: 560px;
-	min-height: 100px;
+	min-height: 300px;
 	max-width: 560px;
 	max-height: 40px;
 	background: var(--gray-500);
