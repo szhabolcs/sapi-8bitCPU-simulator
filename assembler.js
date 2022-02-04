@@ -257,3 +257,8 @@ main:
 end:
     JMP end
 `));
+
+function assembleCode(){
+  let input = document.getElementById("asm-input").value;
+  document.getElementById('asm-output').innerHTML = assembler.assemble(input);
+}

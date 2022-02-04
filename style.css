@@ -11,6 +11,10 @@
 	--text-font: 'Roboto Mono', monospace;
 }
 
+.page-wrapper{
+	margin: 15px;
+}
+
 body{
 	background: var(--bg-color);
 	color: var(--text-color);
@@ -24,7 +28,46 @@ h1,h2,h3{
 	margin-bottom: 10px;
 }
 
+.column {
+	display: flex;
+  	flex-direction: column;
+  	flex-basis: 100%;
+  	flex: 1;
+}
+  
+.row{
+	display: flex;
+  	flex-direction: row;
+  	flex-wrap: wrap;
+  	width: 100%;
+  }
+
+
 #asm-compiled-input{
+	min-width: 560px;
+	min-height: 40px;
+	max-width: 560px;
+	max-height: 40px;
+	background: var(--gray-500);
+	padding: 10px;
+	color: var(--text-color);
+	font-size: 16px;
+	border: solid 1px var(--accent-color);
+}
+
+#asm-input{
+	min-width: 560px;
+	min-height: 100px;
+	max-width: 560px;
+	max-height: 40px;
+	background: var(--gray-500);
+	padding: 10px;
+	color: var(--text-color);
+	font-size: 16px;
+	border: solid 1px var(--accent-color);
+}
+
+#asm-output{
 	min-width: 560px;
 	min-height: 40px;
 	max-width: 560px;
