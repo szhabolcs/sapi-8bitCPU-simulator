@@ -88,21 +88,8 @@ class Assembler {
       return (((operand[1]) & 0b11) << 2 | ((((data[1]) & 0b11) << 0) & 0xff)).toString(16);
     }
     else{
-      if (!isNaN(parseInt(data)) && operand == 'R0') {
-        // this.incrementMemAddress();
-        return '0 ' + data.slice(-2);
-      }
-      else if (!isNaN(parseInt(data)) && operand == 'R1') {
-        // this.incrementMemAddress();
-        return '4 ' + data.slice(-2);
-      }
-      else if (!isNaN(parseInt(data)) && operand == 'R2') {
-        // this.incrementMemAddress();
-        return '8 ' + data.slice(-2);
-      }
-      else if (!isNaN(parseInt(data)) && operand == 'R3') {
-        // this.incrementMemAddress();
-        return 'c ' + data.slice(-2);
+      if(!isNaN(parseInt(data))){
+          return (operand[1]*4).toString(16) +' '+ data.slice(-2);
       }
       else {
         // this.incrementMemAddress(-1);
