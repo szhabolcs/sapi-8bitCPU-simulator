@@ -80,8 +80,7 @@ export class Assembler {
 
     });
 
-    return finalCode;
-
+    return finalCode.slice(0,-1);   // remove last appended space
   }
 
   makeOperand(opCode, operand, data) {
