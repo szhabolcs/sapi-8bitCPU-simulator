@@ -1,3 +1,9 @@
+"use strict";
+
+// Assembler import
+import { Assembler } from "./assembler.js";
+const assembler = new Assembler();
+
 // Constants
 
 const TXT_RUN_CODE = "Run";
@@ -9,9 +15,12 @@ const SIM_RUNNING = 1;
 // DOM variables
 
 let DOMMemory = document.querySelector("#memory > table");
-let DOMCodeInput = document.querySelector("#asm-compiled-input");
+let DOMCodeInput = document.querySelector("#asm-assembled-input");
 let DOMRunBtn = document.querySelector("#run-btn");
 let DOMResetBtn = document.querySelector("#reset-btn");
+let DOMASMInput = document.getElementById("asm-input");
+let DOMASMOutput = document.getElementById("asm-output");
+let DOMAssembleBtn = document.getElementById("assemble-btn");
 
 // CPU related variables
 
@@ -62,7 +71,7 @@ function initDOMMemory() {
 }
 
 function loadCodeToMemory() {
-	let [version, operand] = DOMCodeInput.innerHTML.split('\n');
+	let [version, operand] = DOMCodeInput.value.split('\n');
 	let address = 0;
 	let DOMAddress;
 
@@ -72,7 +81,7 @@ function loadCodeToMemory() {
 	}
 
 	operand = operand.split(' ');
-	for (item of operand) {
+	for (let item of operand) {
 		DOMAddress = document.querySelector(`#mem-loc-${address}`);
 		DOMAddress.innerText = item;
 
@@ -84,7 +93,7 @@ function loadCodeToMemory() {
 function clearDOMMemory() {
 	let DOMAddresses = document.querySelectorAll(".memory-val");
 
-	for (address of DOMAddresses)
+	for (let address of DOMAddresses)
 		address.innerText = "00";
 }
 
@@ -92,12 +101,12 @@ function clearDOMRegisters() {
 	let DOMRegisterDECValues = document.querySelectorAll(".reg-val-dec");
 	let DOMRegisterHEXValues = document.querySelectorAll(".reg-val-hex");
 
-	for (register of DOMRegisterDECValues){
+	for (let register of DOMRegisterDECValues){
 		register.value = "0";
 		register.dispatchEvent(new Event("input"));
 	}
 
-	for (register of DOMRegisterHEXValues)
+	for (let register of DOMRegisterHEXValues)
 		register.innerText = "0x00";
 }
 
@@ -224,10 +233,15 @@ document.querySelectorAll(".editable").forEach(item => {
 	resizeInput(item); // immediately call the function
 });
 
+function assembleCode() {
+	DOMASMOutput.innerHTML = assembler.assemble(DOMASMInput.value);
+}
+
 // Event handling
 
 DOMRunBtn.onclick = toggelSimulation;
 DOMResetBtn.onclick = resetSimulation;
+DOMAssembleBtn.onclick = assembleCode;
 document.querySelectorAll(".editable").forEach(item => {
 	item.addEventListener("input", e => handleDOMContentEdit(e));
 	item.addEventListener("input", e => resizeInput(e)); // bind the "resizeInput" callback on "input" event
