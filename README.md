@@ -1,6 +1,6 @@
 # 8-bit CPU and Assembler
 
-A JS implementation of the [Logisim 8-bit CPU]("https://github.com/Rexagon/logisim-cpu8bit"), and the [reference assembler.]("https://github.com/darktohka/LogisimASM")
+A JS implementation of the [Logisim 8-bit CPU](https://github.com/Rexagon/logisim-cpu8bit), and the [reference assembler.](https://github.com/darktohka/LogisimASM)
 
 ## Assembler
 | # | Mnemonics              | Action                       |
