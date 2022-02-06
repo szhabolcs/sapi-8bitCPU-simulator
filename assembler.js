@@ -26,7 +26,7 @@ export class Assembler {
 
   assemble(code) {
     this.setMemAddress(0);
-    code = code.replace(":", "\n");
+    code = code.replace(/:/g, "\n");
     let lines = code.split('\n').filter(line => line.trim()); //filter out empty lines
     let finalCode = "v2.0 raw\n";
 

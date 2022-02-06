@@ -67,7 +67,9 @@
 
 			<div class="column">
 				<h3>Enter your assembly code here:</h3>
-				<textarea id="asm-input">#Fib code displayed in R3
+				<textarea id="asm-input"># Fib code displayed in R3
+# multiple labels working :)
+
 LI R0, 0x01	; R0 = 1
 LI R1, 0x01	; R1 = 1 
 MOV R3, R1	; R3 = R1
@@ -79,9 +81,9 @@ loop:
     MOV R1, R2
     MOV R3, R2
     JMP loop
-#end: 
-#    JMP end 
-#still working on multiple labels and conditional jumps
+end: 
+    JMP end
+
 </textarea>
 				<br>
 				<div>
