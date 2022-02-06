@@ -1,24 +1,26 @@
-class Assembler {
-  constructor(){
+"use strict";
+
+export class Assembler {
+  constructor() {
     this.memAddress = 0;
     this.labels = {};
   }
 
-  getMemAddress(){
+  getMemAddress() {
     return this.memAddress;
   }
-  setMemAddress(value){
+  setMemAddress(value) {
     this.memAddress = value;
   }
-  incrementMemAddress(byValue = 1){
+  incrementMemAddress(byValue = 1) {
     this.memAddress += byValue;
   }
 
-  getLabel(key){
+  getLabel(key) {
     return this.labels[key];
   }
 
-  setLabel(key, value){
+  setLabel(key, value) {
     this.labels[key] = value;
   }
 
@@ -26,7 +28,7 @@ class Assembler {
     this.setMemAddress(0);
     code = code.replace(":", "\n");
     let lines = code.split('\n').filter(line => line.trim()); //filter out empty lines
-    let finalCode = ""
+    let finalCode = "v2.0 raw\n";
 
     lines.forEach(line => {
       line = line.split(/;|#/)[0];
@@ -54,7 +56,7 @@ class Assembler {
       let restOfString = this.makeOperand(opCode, operand, data);
       //console.log(restOfString,"\n");
 
-      if(operand === undefined && data === undefined) return;
+      if (operand === undefined && data === undefined) return;
 
       if (restOfString !== undefined && restOfString.length === 1) {  // one byte
         finalCode += firstChar[0] + restOfString + " ";
@@ -65,9 +67,9 @@ class Assembler {
           finalCode += firstChar[0] + restOfString[0] + restOfString.substring(restOfString.indexOf(" ")) + " ";
           this.incrementMemAddress(2);
         }
-        else if (opCode === "JMP"){ // two bytes, JMP
-            finalCode += firstChar[0] + "0 " + Assembler.hex(this.getLabel(operand)) + " ";
-            this.incrementMemAddress(2);
+        else if (opCode === "JMP") { // two bytes, JMP
+          finalCode += firstChar[0] + "0 " + Assembler.hex(this.getLabel(operand)) + " ";
+          this.incrementMemAddress(2);
         }
         else {  // two bytes, JNE, JEQ...
           finalCode += firstChar[0] + "0 " + Assembler.hex(this.getLabel(data)) + " ";
@@ -84,16 +86,16 @@ class Assembler {
 
   makeOperand(opCode, operand, data) {
     // this.incrementMemAddress();
-    if(data!== undefined && data[0] == 'R'){
+    if (data !== undefined && data[0] == 'R') {
       return (((operand[1]) & 0b11) << 2 | ((((data[1]) & 0b11) << 0) & 0xff)).toString(16);
     }
-    else{
-      if(!isNaN(parseInt(data))){
-          return (operand[1]*4).toString(16) +' '+ data.slice(-2);
+    else {
+      if (!isNaN(parseInt(data))) {
+        return (operand[1] * 4).toString(16) + ' ' + data.slice(-2);
       }
       else {
         // this.incrementMemAddress(-1);
-        if (data === undefined )
+        if (data === undefined)
           this.setLabel(opCode, this.getMemAddress());
         else
           this.setLabel(data, this.getMemAddress());
@@ -142,8 +144,6 @@ const InstructionMap = {
 
 //let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\n';
 // let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\nend:JMP end';
-
-const assembler = new Assembler();
 
 // console.log(assembler.assemble(`JEQ R1, 0x69`));
 
@@ -195,8 +195,3 @@ main:
 end:
     JMP end
 `));*/
-
-function assembleCode(){
-  let input =document.getElementById("asm-input").value;
-  document.getElementById('asm-output').innerHTML = "v2.0 raw\n"+assembler.assemble(input);
-}
