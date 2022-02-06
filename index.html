@@ -5,7 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
 	<title>8bit CPU Simulator</title>
-	<link href="style.css" rel="stylesheet" type="text/css"/>
+	<link href="style.css" rel="stylesheet" type="text/css" />
+	<link rel="stylesheet" href="8b-asm-prism/highlight.css">
 </head>
 
 <body>
@@ -67,7 +68,8 @@
 
 			<div class="column">
 				<h3>Enter your assembly code here:</h3>
-				<textarea id="asm-input"># Fib code displayed in R3
+				<div class="asm-highlight-parent">
+					<textarea id="asm-input" class="prism-textarea" spellcheck="false" oninput="update(this.value); sync_scroll(this);" onscroll="sync_scroll(this);" onkeydown="check_tab(this, event);"># Fib code displayed in R3
 # multiple labels working :)
 
 LI R0, 0x01	; R0 = 1
@@ -75,16 +77,19 @@ LI R1, 0x01	; R1 = 1
 MOV R3, R1	; R3 = R1
 
 loop:
-    MOV R2, R0
-    ADD R2, R1
-    MOV R0, R1
-    MOV R1, R2
-    MOV R3, R2
-    JMP loop
+	MOV R2, R0
+	ADD R2, R1
+	MOV R0, R1
+	MOV R1, R2
+	MOV R3, R2
+	JMP loop
 end: 
-    JMP end
-
-</textarea>
+	JMP end</textarea>
+					<pre id="highlighting" aria-hidden="true">
+					<code class="language-asm6502" id="highlighting-content">
+					</code>
+					</pre>
+				</div>
 				<br>
 				<div>
 					<button id="assemble-btn" class="btn">Assemble</button>
@@ -95,7 +100,9 @@ end:
 		</div>
 	</div>
 
+	<script src="8b-asm-prism/prism-asm.js"></script>
 	<script src="script.js" type="module"></script>
 	<script src="assembler.js" type="module"></script>
 </body>
+
 </html>

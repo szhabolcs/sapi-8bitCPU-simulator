@@ -1,0 +1,129 @@
+.asm-highlight-parent, textarea, code, pre {
+    height: 320px !important;
+    width: 582px !important;
+    position: relative;
+}
+
+.prism-textarea, #highlighting {
+    /* Both elements need the same text and space styling so they are directly on top of each other */
+    margin: 10px;
+    padding: 10px;
+    width: calc(100% - 32px);
+    border: solid 1px var(--accent-color);
+
+    transform: translate(-10px, -10px);
+}
+
+.prism-textarea, #highlighting, #highlighting * {
+    /* Also add text styles to highlighing tokens */
+    font-size: 16px;
+    font-family: monospace;
+    line-height: 24px;
+    tab-size: 2;
+}
+
+
+.prism-textarea, #highlighting {
+    /* In the same place */
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+/* Move the textarea in front of the result */
+
+.prism-textarea {
+    z-index: 1;
+}
+
+#highlighting {
+    z-index: 0;
+}
+
+
+/* Make textarea almost completely transparent */
+
+.prism-textarea {
+    color: transparent;
+    background: transparent;
+    caret-color: white;
+    /* Or choose your favourite color */
+}
+
+/* Can be scrolled */
+.prism-textarea, #highlighting {
+    overflow: auto;
+    white-space: nowrap;
+    /* Allows textarea to scroll horizontally */
+}
+
+/* No resize on textarea */
+.prism-textarea {
+    resize: none;
+}
+
+
+/* Syntax Highlighting from prism.js starts below, partly modified: */
+
+/* PrismJS 1.26.0
+https://prismjs.com/download.html#themes=prism-okaidia&languages=asm6502 */
+code[class*=language-], pre[class*=language-] {
+    color: #f8f8f2;
+    background: 0 0;
+    text-shadow: 0 1px rgba(0, 0, 0, .3);
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 1em;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    hyphens: none
+}
+
+pre[class*=language-] {
+    padding: 1em;
+    margin: .5em 0;
+    overflow: auto;
+}
+
+:not(pre)>code[class*=language-] {
+    padding: .1em;
+    border-radius: .3em;
+    white-space: normal
+}
+
+/* Color stuff */
+#highlighting *, pre{
+    background-color: var(--gray-500) !important;
+}
+
+.comment {
+    color: #667579;
+}
+
+.op-code{
+    color: #56c3f1;
+    font-weight: bold;
+}
+
+.register{
+    color: #60cba3;
+    font-style: italic;
+}
+
+.hex-number{
+    color: #7ba4d3;
+}
+
+.label{
+    color: #f18181;
+}
