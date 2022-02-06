@@ -62,8 +62,7 @@ export class Assembler {
           this.incrementMemAddress(2);
         }
         else {  // two bytes, JNE, JEQ...
-          finalCode += firstChar[0] + Assembler.hex(this.getLabel(data)-1)[1] + " "+'00 ';
-          //added a nop after every conditional jmp
+          finalCode += firstChar[0]+"0 " + Assembler.hex(this.getLabel(data)) + " ";
           this.incrementMemAddress(2);
         }
       }
