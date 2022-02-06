@@ -53,6 +53,7 @@ h1,h2,h3{
 	color: var(--text-color);
 	font-size: 16px;
 	border: solid 1px var(--accent-color);
+	resize: none;
 }
 
 #asm-input{
@@ -65,6 +66,7 @@ h1,h2,h3{
 	color: var(--text-color);
 	font-size: 16px;
 	border: solid 1px var(--accent-color);
+	resize: none;
 }
 
 #asm-output{
@@ -77,6 +79,7 @@ h1,h2,h3{
 	color: var(--text-color);
 	font-size: 16px;
 	border: solid 1px var(--accent-color);
+	resize: none;
 }
 
 #registers{
@@ -183,3 +186,25 @@ tr:hover{
 	font-size: 18px;
 	width: min-content;
 }
+
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--gray-500);
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 15px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: var(--gray-500);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--accent-color);
+    border-radius: 0px;
+    border: 3px solid var(--gray-500);
+  }
