@@ -41,16 +41,6 @@ export class Assembler {
         return line;
       });
 
-      // LI R2, 0x09  egyszeru, 2*4 az operand
-      // MOV R1, R2   == 66 ,mert 6/4 = 1  es 6 % 4 = 2 
-      // op = LI
-      // operand = R2
-      // data = 0x09
-
-      //console.log(Assembler.hex(InstructionMap[opCode], "end"), operand, data);
-      //console.log(InstructionMap[opCode], operand, data);
-
-
       let firstChar = Assembler.hex(InstructionMap[opCode], "end");
       // this.incrementMemAddress();
       let restOfString = this.makeOperand(opCode, operand, data);
@@ -72,7 +62,8 @@ export class Assembler {
           this.incrementMemAddress(2);
         }
         else {  // two bytes, JNE, JEQ...
-          finalCode += firstChar[0] + "0 " + Assembler.hex(this.getLabel(data)) + " ";
+          finalCode += firstChar[0] + Assembler.hex(this.getLabel(data)-1)[1] + " "+'00 ';
+          //added a nop after every conditional jmp
           this.incrementMemAddress(2);
         }
       }
@@ -133,64 +124,4 @@ const InstructionMap = {
   "JMP": 0xf,
 }
 
-//export { Assembler };
 
-
-// function compile(testCode) {
-//   return "Compiled: " + Assembler.assemble(testCode);
-// }
-
-
-//let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\n';
-// let testCode = 'LI R2, 0x09\nLI R3, 0x07\nADD R3, R2\nend:JMP end';
-
-// console.log(assembler.assemble(`JEQ R1, 0x69`));
-
-//e0 01 e4 01 6d 68 29 61 66 6e f0 05 f0 0c
-
-/*console.log(assembler.assemble(`
-# Fib code
-LI R0, 0x01   ; R0 = 1
-LI R1, 0x01
-MOV R3, R1
-
-loop:
-   MOV R2, R0
-   ADD R2, R1
-   MOV R0, R1
-   MOV R1, R2
-   MOV R3, R2
-   JMP loop
-end:
-   JMP end
-`));
-*/
-//e8 09 ec 07 2e f0 05
-// console.log(assembler.assemble(`
-// LI R2, 0x09
-// LI R3, 0x07
-// ADD R3, R2
-// end:JMP end
-// `));
-
-/*
-console.log(assembler.assemble(`
-;   Loads 1...n in mem[0x20]...mem[0x2+n]
-
-    LI R0, 0x08     ; n = 8
-    LI R1, 0x01     ; tmp = 1
-    LI R2, 0x20     ; mem_i
-    LI R3, 0x01     ; i
-
-main:
-    
-    SW R3, (R2)     ; mem[mem_i] = i
-    ADD R2, R1      ; mem_i++
-    ADD R3, R1      ; i++
-
-    SUB R0, R1      ; n -= tmp
-    JNE R0, main    ; if (n) main
-
-end:
-    JMP end
-`));*/
