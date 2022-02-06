@@ -84,54 +84,8 @@ class Assembler {
 
   makeOperand(opCode, operand, data) {
     // this.incrementMemAddress();
-
-    if (operand == 'R0' && data == 'R0') {
-      return '0';
-    }
-    else if (operand == 'R0' && data == 'R1') {
-      return '1';
-    }
-    else if (operand == 'R0' && data == 'R2') {
-      return '2';
-    }
-    else if (operand == 'R0' && data == 'R3') {
-      return '3';
-    }
-    else if (operand == 'R1' && data == 'R0') {
-      return '4';
-    }
-    else if (operand == 'R1' && data == 'R1') {
-      return '5';
-    }
-    else if (operand == 'R1' && data == 'R2') {
-      return '6';
-    }
-    else if (operand == 'R1' && data == 'R3') {
-      return '7';
-    }
-    else if (operand == 'R2' && data == 'R0') {
-      return '8';
-    }
-    else if (operand == 'R2' && data == 'R1') {
-      return '9';
-    }
-    else if (operand == 'R2' && data == 'R2') {
-      return 'a';
-    }
-    else if (operand == 'R2' && data == 'R3') {
-      return 'b';
-    }
-    else if (operand == 'R3' && data == 'R0') {
-      return 'c';
-    }
-    else if (operand == 'R3' && data == 'R1') {
-      return 'd';
-    }
-    else if (operand == 'R3' && data == 'R2') {
-      return 'e';
-    }
-    else if (operand == 'R3' && data == 'R3') {
-      return 'f';
+    if(data!== undefined && data[0] == 'R'){
+      return (((operand[1]) & 0b11) << 2 | ((((data[1]) & 0b11) << 0) & 0xff)).toString(16);
     }
     else{
       if (!isNaN(parseInt(data)) && operand == 'R0') {
@@ -207,8 +161,8 @@ const assembler = new Assembler();
 // console.log(assembler.assemble(`JEQ R1, 0x69`));
 
 //e0 01 e4 01 6d 68 29 61 66 6e f0 05 f0 0c
-/*
-console.log(assembler.assemble(`
+
+/*console.log(assembler.assemble(`
 # Fib code
 LI R0, 0x01   ; R0 = 1
 LI R1, 0x01
