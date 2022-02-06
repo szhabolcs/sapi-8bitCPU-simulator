@@ -234,7 +234,7 @@ document.querySelectorAll(".editable").forEach(item => {
 });
 
 function assembleCode() {
-	DOMASMOutput.innerHTML = assembler.assemble(DOMASMInput.value);
+	DOMASMOutput.value = assembler.assemble(DOMASMInput.value);
 }
 
 // Event handling
