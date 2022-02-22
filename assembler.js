@@ -62,7 +62,8 @@ export class Assembler {
           this.incrementMemAddress(2);
         }
         else {  // two bytes, JNE, JEQ...
-          finalCode += firstChar[0]+"0 " + Assembler.hex(this.getLabel(data)) + " ";
+          finalCode += firstChar[0]+(operand[1]*4).toString(16)+ " " + Assembler.hex(this.getLabel(data)) + " ";
+          // added the second bit to jump opcode for example jne - 9 and R3 - c ==> 9c
           this.incrementMemAddress(2);
         }
       }
@@ -87,7 +88,8 @@ export class Assembler {
         if (data === undefined)
           this.setLabel(opCode, this.getMemAddress());
         else
-          this.setLabel(data, this.getMemAddress());
+          this.setLabel(opCode, this.getMemAddress());
+          //at this section the label is the opcode not the data
       }
 
     }
